@@ -1,0 +1,83 @@
+import java.util.Scanner;
+import java.io.*;
+public class KYC
+{
+    static int getMin(int arr[],int N)
+    {
+        int minInd = 0;
+        for (int i = 1; i < N; i++)
+            if (arr[i] < arr[minInd])
+                minInd = i;
+        return minInd;
+    }
+     
+    static int getMax(int arr[],int N)
+    {
+        int maxInd = 0;
+        for (int i = 1; i < N; i++)
+            if (arr[i] > arr[maxInd])
+                maxInd = i;
+        return maxInd;
+    }
+
+    static int minOf2(int x, int y)
+    {
+        return (x < y) ? x: y;
+    }
+      
+    static void minCashFlowRec(int amount[],int N)throws IOException
+    {
+        int mxCredit = getMax(amount,N), mxDebit = getMin(amount,N);
+        if (amount[mxCredit] == 0 && amount[mxDebit] == 0)
+            return;
+        int min = minOf2(-amount[mxDebit], amount[mxCredit]);
+        amount[mxCredit] -= min;
+        amount[mxDebit] += min;
+        FileWriter writer = new FileWriter("D:\\eclipse\\KnowYourShare\\KYC.txt");  
+        BufferedWriter buffer = new BufferedWriter(writer);
+        System.out.println("Person " + (mxDebit+1) + " has to pay " + min + " to " + "Person " + (mxCredit+1));
+        buffer.write("Person " + (mxDebit+1) + " has to pay " + min + " to " + "Person " + (mxCredit+1));
+        minCashFlowRec(amount,N);
+        buffer.close();
+    }
+     
+    static void minCashFlow(int graph[][],int N)throws IOException
+    {
+        int amount[]=new int[N];
+        for (int p = 0; p < N; p++)
+        for (int i = 0; i < N; i++)
+            amount[p] += (graph[i][p] - graph[p][i]);
+        minCashFlowRec(amount,N);
+    }
+
+	public static void main(String[] args)throws IOException
+	{
+    	Scanner ob=new Scanner(System.in);
+		int x,n;
+		int adjMatrix[][];
+		char flag;
+		System.out.println("Enter the number of People: ");
+		n=ob.nextInt();
+		adjMatrix=new int[n][n];
+		for(int i=0;i<n;i++)
+		{
+			for(int j=0;j<n;j++)
+			{
+				if(i==j)
+					continue;
+				System.out.println("Is "+(i+1)+" indebted to "+(j+1)+"?");
+				flag=ob.next().charAt(0);
+				if(flag=='Y'||flag=='y')
+				{
+					System.out.println("What is the amount "+(i+1)+ " needs to pay "+(j+1)+" : ");
+					x=ob.nextInt();
+					adjMatrix[i][j] = x;
+				}
+				else
+					continue;
+			}
+		}
+		ob.close();
+        minCashFlow(adjMatrix,n);
+	}
+}
